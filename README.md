@@ -30,8 +30,6 @@ Import `docs/order-execution.postman_collection.json`. It contains:
 - Queue configuration (concurrency, rate limits, retry/backoff) via `src/infrastructure/queue`.
 - WebSocket lifecycle (subscription, message filtering, cleanup) via `src/api/websocket`.
 
-Add `--runInBand` if you want serialized execution during debugging.
-
 ### Deployed link 
 - https://eterna-labs-1.onrender.com
 - curl -X POST "https://eterna-labs-1.onrender.com/api/orders/execute" \

@@ -19,8 +19,13 @@ Fastify-based market-order executor that simulates Raydium vs. Meteora routing, 
 ### System Flow & Demo Expectations
 
 1. **Order submission & design decisions**  
-   - Fastify handles `POST /api/orders/execute`, validates with Zod, persists the order as `PENDING`, and enqueues it in BullMQ before responding with `{ orderId, websocket }`.  
-   - A single BullMQ worker (`src/workers/orderWorker.ts`) advances each order through `ROUTING → BUILDING → SUBMITTED → CONFIRMED/FAILED`, logging wrap/unwrap SOL steps, chosen DEX, tx hashes, and publishing every update via Redis Pub/Sub so WebSockets stay current.
+   - Client sends `POST /api/orders/execute` with `{ inputToken, outputToken, amount }`.
+   - Fastify + Zod validate the request, then Prisma creates the order with status `PENDING`.
+   - The server enqueues the order into BullMQ and publishes an initial `PENDING` update to Redis.
+   - Server responds immediately with `{ orderId, websocket: "/api/orders/execute?orderId=<id>" }`.
+   - Client opens a WebSocket connection to that URL server sends a current snapshot of the order.
+   - The BullMQ worker processes the order (`ROUTING → BUILDING → SUBMITTED → CONFIRMED/FAILED`), choosing the best DEX, logging wrap/unwrap steps, and publishing each update via Redis Pub/Sub.
+   - The WebSocket forwards these Redis updates to the client in real time until the order finishes.
 
 2. **Submitting 3–5 orders simultaneously**  
    - `npm run seed` (or firing multiple POST calls) creates five orders at once. BullMQ accepts all jobs immediately; the worker’s `concurrency: 10` setting allows them to process in parallel while the rate limiter enforces ≤100 orders/minute.

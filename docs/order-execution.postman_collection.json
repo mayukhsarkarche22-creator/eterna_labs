@@ -1,0 +1,94 @@
+{
+  "info": {
+    "name": "Order Execution Engine",
+    "_postman_id": "c6d7c4ab-0c1f-4ec9-8f6c-collection",
+    "description": "Sample requests for the Fastify market-order engine plus WebSocket subscription.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Execute Market Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"inputToken\": \"SOL\",\n  \"outputToken\": \"USDC\",\n  \"amount\": 12.5\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orders/execute",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "execute"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Subscribe To Order Updates (WebSocket)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{wsUrl}}/api/orders/execute?orderId={{orderId}}",
+          "host": [
+            "{{wsUrl}}"
+          ],
+          "path": [
+            "api",
+            "orders",
+            "execute"
+          ],
+          "query": [
+            {
+              "key": "orderId",
+              "value": "{{orderId}}"
+            }
+          ]
+        },
+        "description": "Send the POST request first, copy the returned orderId, then connect here (switching the request type to WebSocket) so the same endpoint streams live updates."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "wsUrl",
+      "value": "ws://localhost:3000"
+    },
+    {
+      "key": "orderId",
+      "value": "<paste-order-id>"
+    }
+  ]
+}
+

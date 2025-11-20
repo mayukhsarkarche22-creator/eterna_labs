@@ -54,7 +54,7 @@ Import `docs/order-execution.postman_collection.json`. It contains:
 - WebSocket lifecycle (subscription, message filtering, cleanup) via `src/api/websocket`.
 
 ### Deployed link 
-- https://eterna-labs-1.onrender.com
+- [Deplyment_Link](https://eterna-labs-1.onrender.com/health)
 - curl -X POST "https://eterna-labs-1.onrender.com/api/orders/execute" \
        -H "Content-Type: application/json" \
        -d '{"inputToken":"SOL","outputToken":"USDC","amount":10}'

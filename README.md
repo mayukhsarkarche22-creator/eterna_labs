@@ -16,6 +16,24 @@ Fastify-based market-order executor that simulates Raydium vs. Meteora routing, 
    - Development: `npm run dev`
    - Seed demo orders: `npm run seed`
 
+### System Flow & Demo Expectations
+
+1. **Order submission & design decisions**  
+   - Fastify handles `POST /api/orders/execute`, validates with Zod, persists the order as `PENDING`, and enqueues it in BullMQ before responding with `{ orderId, websocket }`.  
+   - A single BullMQ worker (`src/workers/orderWorker.ts`) advances each order through `ROUTING → BUILDING → SUBMITTED → CONFIRMED/FAILED`, logging wrap/unwrap SOL steps, chosen DEX, tx hashes, and publishing every update via Redis Pub/Sub so WebSockets stay current.
+
+2. **Submitting 3–5 orders simultaneously**  
+   - `npm run seed` (or firing multiple POST calls) creates five orders at once. BullMQ accepts all jobs immediately; the worker’s `concurrency: 10` setting allows them to process in parallel while the rate limiter enforces ≤100 orders/minute.
+
+3. **WebSocket lifecycle (`PENDING → ROUTING → … → CONFIRMED`)**  
+   - Connect any WS client (Postman/Insomnia/`wscat`) to `wss://<host>/api/orders/execute?orderId=<id>`. The handler sends a `PENDING` snapshot as soon as the socket opens, then streams every state change until the order finishes.
+
+4. **DEX routing visibility**  
+   - `BUILDING` logs include the winning venue and price/fee (e.g., “Quote received: Raydium @ 100.21 (fee: 0.30bps)”), so both console output and WS messages prove the router compared Raydium vs. Meteora and picked the best net execution. Wrap/unwrap messages highlight native SOL handling.
+
+5. **Queue + retry behavior**  
+   - `src/infrastructure/queue.ts` sets `concurrency: 10`, `limiter: { max: 100, duration: 60000 }`, and `defaultJobOptions: { attempts: 3, backoff: exponential }`. Slippage errors log `FAILED` immediately; other errors retry up to three times and emit a final failure entry when exhausted.
+
 ### Postman / Insomnia Collection
 
 Import `docs/order-execution.postman_collection.json`. It contains:

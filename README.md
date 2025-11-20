@@ -34,6 +34,9 @@ Add `--runInBand` if you want serialized execution during debugging.
 
 ### Deployed link 
 - https://eterna-labs-1.onrender.com
+- curl -X POST "https://eterna-labs-1.onrender.com/api/orders/execute" \
+       -H "Content-Type: application/json" \
+       -d '{"inputToken":"SOL","outputToken":"USDC","amount":10}'
 
 ### Extending To Other Order Types
 

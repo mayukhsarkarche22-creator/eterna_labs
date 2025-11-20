@@ -32,6 +32,9 @@ Import `docs/order-execution.postman_collection.json`. It contains:
 
 Add `--runInBand` if you want serialized execution during debugging.
 
+### Deployed link 
+- https://eterna-labs-1.onrender.com
+
 ### Extending To Other Order Types
 
 - **Limit orders**: introduce a price guard before logging `ROUTING`; defer queue processing until market data meets the limit condition.

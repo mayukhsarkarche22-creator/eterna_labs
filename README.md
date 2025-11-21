@@ -58,6 +58,7 @@ Import `docs/order-execution.postman_collection.json`. It contains:
 - curl -X POST "https://eterna-labs-1.onrender.com/api/orders/execute" \
        -H "Content-Type: application/json" \
        -d '{"inputToken":"SOL","outputToken":"USDC","amount":10}'
+- [YouTube](https://www.youtube.com/watch?v=_onWab0LsdY)
 
 ### Extending To Other Order Types
 
